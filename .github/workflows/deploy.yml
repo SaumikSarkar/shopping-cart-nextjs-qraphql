@@ -2,22 +2,15 @@ name: Deploy
 
 on:
   push:
-    branches: main
+    branches: [main]
   workflow_dispatch:
-
-permissions:
-  contents: read
-  pages: write
-  id-token: write
 
 env:
   NODE_VERSION: "22"
   NEXT_PUBLIC_GRAPHQL_ENDPOINT: ${{ vars.NEXT_PUBLIC_GRAPHQL_ENDPOINT }}
   VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-
-concurrency:
-  group: "pages"
-  cancel-in-progress: false
+  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
 jobs:
   deploy:
@@ -31,12 +24,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "${{ env.NODE_VERSION }}"
-
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
-        with:
-          static_site_generator: next
+          node-version: ${{ env.NODE_VERSION }}
 
       - name: Cache Yarn
         id: yarn_cache
@@ -51,10 +39,24 @@ jobs:
         if: steps.yarn_cache.outputs.cache-hit != 'true'
         run: yarn install --frozen-lockfile --ignore-scripts
 
+      - name: Cache Next.js build
+        uses: actions/cache@v3
+        with:
+          path: .next/cache
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-nextjs-
+
       - name: Build
         run: yarn build
         env:
           NEXT_PUBLIC_GRAPHQL_ENDPOINT: ${{ env.NEXT_PUBLIC_GRAPHQL_ENDPOINT }}
 
-      - name: Deploy to vercel
-        run: npx vercel --prod --token=${{ env.VERCEL_TOKEN }}
+      - name: Deploy to Vercel
+        run: |
+          npx vercel deploy \
+            --token=${{ env.VERCEL_TOKEN }} \
+            --prod \
+            --yes \
+            --org ${{ env.VERCEL_ORG_ID }} \
+            --project ${{ env.VERCEL_PROJECT_ID }}
