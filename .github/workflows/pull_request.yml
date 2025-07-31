@@ -1,0 +1,52 @@
+name: Pull Request
+
+env:
+  NODE_VERSION: "22"
+  NEXT_PUBLIC_GRAPHQL_ENDPOINT: ${{ vars.NEXT_PUBLIC_GRAPHQL_ENDPOINT }}
+
+on:
+  pull_request:
+    branches:
+      - main
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "${{ env.NODE_VERSION }}"
+          registry-url: "https://npm.pkg.github.com"
+
+      - name: Cache Yarn
+        id: yarn_cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cache/yarn
+            node_modules
+          key: "${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}"
+
+      - name: Install dependencies
+        if: steps.yarn_cache.outputs.cache-hit != 'true'
+        run: yarn install --frozen-lockfile --ignore-scripts
+
+      - name: Check lint
+        run: yarn lint
+        env:
+          NEXT_PUBLIC_GRAPHQL_ENDPOINT: ${{ env.NEXT_PUBLIC_GRAPHQL_ENDPOINT }}
+
+      - name: Run tests
+        run: yarn test:ci
+        env:
+          NEXT_PUBLIC_GRAPHQL_ENDPOINT: ${{ env.NEXT_PUBLIC_GRAPHQL_ENDPOINT }}
+
+      - name: Build
+        run: yarn build
+        env:
+          NEXT_PUBLIC_GRAPHQL_ENDPOINT: ${{ env.NEXT_PUBLIC_GRAPHQL_ENDPOINT }}
