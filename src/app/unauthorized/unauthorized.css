@@ -1,0 +1,30 @@
+.unauthorized-container {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.unauthorized-box {
+  text-align: center;
+  padding: 2rem;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  background-color: #fafafa;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+.unauthorized-icon {
+  color: #ff9800;
+  font-size: 60px !important;
+  margin-bottom: 1rem;
+}
+
+.unauthorized-message {
+  margin-bottom: 1.5rem;
+  color: #555;
+}
+
+.unauthorized-button {
+  text-transform: none;
+}
