@@ -1,6 +1,8 @@
 import { ApolloProvider } from "@apollo/client";
 
 import client from "@/lib/apollo-client";
+import { AuthProvider } from "@/context/AuthContext/AuthContext";
+import { CartProvider } from "@/context/CartContext/CartContext";
 
 type AppProviderProps = Readonly<{
   children: React.ReactNode;
@@ -9,7 +11,9 @@ type AppProviderProps = Readonly<{
 export default function AppProvider({ children }: AppProviderProps) {
   return (
     <ApolloProvider client={client}>
-      {children}
+      <AuthProvider>
+        <CartProvider>{children}</CartProvider>
+      </AuthProvider>
     </ApolloProvider>
   );
 }

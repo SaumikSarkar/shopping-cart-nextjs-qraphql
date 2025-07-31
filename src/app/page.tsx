@@ -1,4 +1,5 @@
+import { redirect } from "next/navigation";
+
 export default function RootPage() {
-  // TODO: implement the code
-  return <div>Root page</div>;
+  redirect("/login");
 }
