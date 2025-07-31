@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  output: "export",
   reactStrictMode: true,
   experimental: {
     serverActions: true,
@@ -16,6 +17,8 @@ const nextConfig = {
       },
     ],
   },
+  basePath: "/shopping-cart-nextjs-qraphql",
+  assetPrefix: "/shopping-cart-nextjs-qraphql/",
 };
 
 export default nextConfig;
