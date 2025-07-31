@@ -15,6 +15,7 @@ export default [
       'dist/',
       'public/',
       '*.config.js',
+      'out/'
     ]
   },
   js.configs.recommended,
